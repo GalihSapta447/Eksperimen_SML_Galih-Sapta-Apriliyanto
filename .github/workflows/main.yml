@@ -5,12 +5,29 @@ on: [push]
 jobs:
   run-preprocessing:
     runs-on: ubuntu-latest
+    # Memberi izin workflow untuk menulis/push ke repo
+    permissions:
+      contents: write
+      
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
-      - run: pip install pandas scikit-learn
-      - run: |
-          cd preprocessing
-          python automate_Galih.py
+          python-version: '3.9'
+          
+      - name: Install dependencies
+        run: |
+          pip install pandas scikit-learn
+          
+      - name: Run preprocessing script
+        run: python preprocessing/automate_Galih.py
+          
+      - name: Commit and Push preprocessed data
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add preprocessing/exam_score_preprocessed.csv
+          git commit -m "Update preprocessed dataset [automated]" || echo "No changes to commit"
+          git push
