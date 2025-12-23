@@ -1,10 +1,20 @@
 import pandas as pd
+import os
 from sklearn.preprocessing import StandardScaler
 
-
 def main():
-    # Load raw dataset
-    df = pd.read_csv("Exam_Score_Prediction.csv")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, "..", "Exam_Score_Prediction.csv")
+
+    print(f"Mencoba membaca file dari: {file_path}")
+
+    try:
+        # Load raw dataset
+        df = pd.read_csv(file_path)
+    except FileNotFoundError:
+        print(f"Error: File tidak ditemukan di {file_path}")
+        print(f"Isi folder saat ini: {os.listdir(os.path.dirname(file_path))}")
+        return
 
     # Separate features and target
     X = df.drop("exam_score", axis=1)
@@ -24,14 +34,11 @@ def main():
     # Combine features and target
     df_preprocessed = pd.concat([X_encoded, y], axis=1)
 
-    # Save preprocessed dataset
-    df_preprocessed.to_csv(
-        "exam_score_preprocessed.csv",
-        index=False
-    )
+    # Simpan hasil preprocessing ke folder yang sama dengan file input
+    output_path = os.path.join(current_dir, "..", "exam_score_preprocessed.csv")
+    df_preprocessed.to_csv(output_path, index=False)
 
-    print("Preprocessing selesai. Dataset disimpan.")
-
+    print(f"Preprocessing selesai. Dataset disimpan di: {output_path}")
 
 if __name__ == "__main__":
     main()
